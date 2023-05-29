@@ -1,0 +1,99 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: sam-app
+Transform:
+- AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Tracing: Active
+  Api:
+    Cors:
+      AllowMethods: '''OPTIONS,POST,GET,DELETE,PUT'''
+      AllowHeaders: '''*'''
+      AllowOrigin: ''''''
+    TracingEnabled: true
+Resources:
+  getAllItemsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-all-items.getAllItemshandler
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP get method to get all items from
+        a DynamoDB table.
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /employees
+            Method: GET
+      CodeUri: getAllItemsFunction
+    Metadata:
+      SamResourceId: getAllItemsFunction
+  deleteByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/delete-by-id.deleteByIdHandler
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example include a HTTP delete method to delete item from
+        RDS table.
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /delete/{id}
+            Method: DELETE
+      CodeUri: deleteByIdFunction
+    Metadata:
+      SamResourceId: deleteByIdFunction
+  createItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/create-item.postItemhandler
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example include a HTTP post method to add one item in
+        RDS table.
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /add_employee
+            Method: POST
+      CodeUri: createItemFunction
+    Metadata:
+      SamResourceId: createItemFunction
+  updateItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/update-item.updateItemHandler
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example include a HTTP PUT method to update item in RDS
+        table.
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /update
+            Method: PUT
+      CodeUri: updateItemFunction
+    Metadata:
+      SamResourceId: updateItemFunction
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
